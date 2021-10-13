@@ -5,7 +5,8 @@
  *
  * @return mysqli Возвращает подключение к БД.
  */
-function db_connect():mysqli{
+function db_connect():mysqli
+{
     $con = mysqli_connect('localhost', 'root', 'root', 'yeticave');
     if ($con == false){
         print ("Ошибка подключения" . mysqli_connect_error());

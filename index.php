@@ -27,7 +27,8 @@ print($layout_content);
  * @param  mysqli $con Подключение к БД.
  * @return array Массив лотов.
  */
-function getItems (mysqli $con): array{
+function getItems (mysqli $con): array
+{
     $sql = "SELECT
                 i.id id, i.name, c.name category, IFNULL(b.price,start_price) price, img_path url, completion_date expiry_date
              FROM  item i

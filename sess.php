@@ -5,7 +5,8 @@ session_start();
 /**
  * Проверяет существование сессии.
  */
-function sess_check_auth(): void{
+function sess_check_auth(): void
+{
     if(!isset($_SESSION['id'])){
         header('HTTP/1.0 403 Forbidden');
         die();
@@ -16,7 +17,8 @@ function sess_check_auth(): void{
  * Возвращает id пользователя из сессии.
  * @return int id пользователя, либо null.
  */
-function sess_get_user_id(): ?int{
+function sess_get_user_id(): ?int
+{
     $value = $_SESSION['id'] ?? null;
     $user_id = null;
 
@@ -30,7 +32,8 @@ function sess_get_user_id(): ?int{
 /**
  * Удаляет сессию.
  */
-function sess_logout(): void{
+function sess_logout(): void
+{
     unset($_SESSION['id']);
 }
 

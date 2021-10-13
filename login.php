@@ -35,7 +35,8 @@ print($layout_content);
  * @param  array $data Массив переданых из формы данных
  * @return array Массив ошибок или пустой массив в случае их отсутствия.
  */
-function checkLoginErrors(mysqli $con, array $data): array{
+function checkLoginErrors(mysqli $con, array $data): array
+{
     $result = [];
     $email_error = checkEmail($con, $data['email']);
     
@@ -58,7 +59,8 @@ function checkLoginErrors(mysqli $con, array $data): array{
  * @param  string $email Введенный емайл
  * @return string Возвращает ошибку.
  */
-function checkEmail(mysqli $con, string $email): string{
+function checkEmail(mysqli $con, string $email): string
+{
     if($email == ''){
         return 'Введите e-mail';
     }
@@ -87,7 +89,8 @@ function checkEmail(mysqli $con, string $email): string{
  * @param  string $password Введенный пароль.
  * @return string Возвращает ошибку.
  */
-function checkPassword(mysqli $con, string $email, string $password): string{
+function checkPassword(mysqli $con, string $email, string $password): string
+{
     if ($password == '') {
         return 'Введите пароль';
     }

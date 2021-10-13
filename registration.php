@@ -40,7 +40,8 @@ print($layout_content);
  * @param  array $data Данные из формы.
  * @return array Массив ошибок.
  */
-function checkRegistrationErrors(mysqli $con, array $data): array{
+function checkRegistrationErrors(mysqli $con, array $data): array
+{
     $result = [];
     if($email_error = checkEmail($con, $data['email'])){
         $result['email'] = $email_error;
@@ -65,7 +66,8 @@ function checkRegistrationErrors(mysqli $con, array $data): array{
  * @param  string $email Введенный емайл.
  * @return string Текст ошибки.
  */
-function checkEmail(mysqli $con, string $email): string{
+function checkEmail(mysqli $con, string $email): string
+{
     if($email == ''){
         return 'Введите e-mail';
     }
@@ -93,7 +95,8 @@ function checkEmail(mysqli $con, string $email): string{
  * @param  mixed $incoming_data Введенные в форму данные.
  * @return void
  */
-function setUserOnDb (mysqli $con, array $incoming_data){
+function setUserOnDb (mysqli $con, array $incoming_data)
+{
     $password = password_hash($incoming_data['password'], PASSWORD_DEFAULT);
     $sql = "INSERT INTO user (registration_date, email, name, password, contacts) 
         VALUE (?, ?, ?, ?, ?)";

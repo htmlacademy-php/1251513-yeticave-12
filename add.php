@@ -46,7 +46,8 @@ print($layout_content);
  * @param  array $files_data Массив переданного изображения.
  * @return array Массив выявленных ошибок, либо пустой массив, в случае отсутствия ошибок.
  */
-function checkForErrors(array $incoming_data, array $files_data): array{
+function checkForErrors(array $incoming_data, array $files_data): array
+{
     $result = [];
     if ($incoming_data['lot-name'] == ''){
         $result['lot-name'] = 'Введите наименование лота';
@@ -85,7 +86,8 @@ function checkForErrors(array $incoming_data, array $files_data): array{
  * @param  string $date Вводимая дата.
  * @return bool Истина, если введенная дата еще не истекла, лож в противном случае.
  */
-function checkLotDate(string $date): bool{
+function checkLotDate(string $date): bool
+{
     $endDate = DateTime::createFromFormat('Y-m-d', $date);
     $currentDate = new DateTime();
     $range = $currentDate -> diff($endDate);
@@ -105,7 +107,8 @@ function checkLotDate(string $date): bool{
  * @param  int $user_id id автора размещаемого лота
  * @return int id записанного в БД лота.
  */
-function sentDataToDB(mysqli $con, array $incoming_data, array $img_file, int $user_id): int{
+function sentDataToDB(mysqli $con, array $incoming_data, array $img_file, int $user_id): int
+{
     $category_id = getCategoryId($con, $incoming_data['category']);
     $incoming_data['lot-img'] = 'test_path';
     $sql = "INSERT INTO
@@ -138,7 +141,8 @@ function sentDataToDB(mysqli $con, array $incoming_data, array $img_file, int $u
  * @param  string $str Вводимое имя категории.
  * @return int id категории.
  */
-function getCategoryId(mysqli $con, string $str) : int{
+function getCategoryId(mysqli $con, string $str) : int
+{
     $sql = "SELECT id FROM category WHERE name = ?";
     $stmt = db_get_prepare_stmt($con, $sql, [$str]);
     mysqli_stmt_execute($stmt);
