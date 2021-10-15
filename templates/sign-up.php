@@ -3,7 +3,7 @@
         <ul class="nav__list container">
             <?php foreach ($categories_arr as $category): ?>
                 <li class="nav__item">
-                    <a href="all-lots.html"><?=xss_protection($category['name']); ?></a>
+                    <a href="index.php?category=<?=$category['code']?>"><?=xss_protection($category['name']); ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>
