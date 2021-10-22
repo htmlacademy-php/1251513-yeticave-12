@@ -20,7 +20,7 @@ $bets_arr = getBetsArr($con, $user_id);
 
 $page_content = include_template('my-bets_tmp.php', ['categories_arr' => $categories_arr, 'bets_arr' => $bets_arr, 'user_id' => $user_id]);
 
-$layout_content = include_template('layout.php', ['user_name' => $user_name, 'categories_arr' => $categories_arr, 'content' => $page_content ,'title' => 'Добавление лота']);
+$layout_content = include_template('layout.php', ['user_name' => $user_name, 'categories_arr' => $categories_arr, 'content' => $page_content ,'title' => 'Мои ставки']);
 
 print($layout_content);
 
