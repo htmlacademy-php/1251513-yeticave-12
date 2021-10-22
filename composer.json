@@ -1,0 +1,9 @@
+{
+    "name": "artem2j/yeticave",
+    "description": "Study project",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "swiftmailer/swiftmailer": "^6.2"
+    }
+}

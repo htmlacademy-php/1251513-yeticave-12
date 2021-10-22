@@ -29,6 +29,9 @@ $layout_content = include_template('layout.php', ['user_name' => $user_name, 'ca
 
 print($layout_content);
 
+require_once('getwinner.php');
+
+
 /**
  * Возвращает массив открытых лотов в порядке от нового к старому.
  *
