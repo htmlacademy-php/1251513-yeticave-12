@@ -24,6 +24,13 @@ $layout_content = include_template('layout.php', ['user_name' => $user_name, 'ca
 
 print($layout_content);
 
+/**
+ * Возвращает массив с данными лотов, в которых пользователь производил ставки.
+ * 
+ * @param mysqli $con подключение к БД.
+ * @param int $user_id id пользователя.
+ * @return array массив с лотами.
+ */
 function getBetsArr(mysqli $con, int $user_id): array
 {
     $result = [];

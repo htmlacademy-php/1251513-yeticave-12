@@ -7,7 +7,12 @@ if (isset($winners)){
     }
 }
 
-
+/**
+ * Проверка БД на наличие новых победителей.
+ * 
+ * @param  mysqli $con Подключение к БД.
+ * @return array Возвращает массив с данными каждого победителя [id лота, id победителя, имя лота].
+ */
 function checkWinners(mysqli $con): array{
     $pair = [];
     $date = new DateTime();
@@ -27,6 +32,12 @@ function checkWinners(mysqli $con): array{
     return $pair;
 }
 
+/**
+ * Отмечает в лоте победителя
+ * 
+ * @param  mysqli $con Подключение к БД.
+ * @param array $winner Массив с данными победителя [id лота, id победителя, имя лота].
+ */
 function setWinnerOnDB(mysqli $con, array $winner)
 {
     $sql = "UPDATE item SET winner_id=? WHERE id=?";
@@ -42,6 +53,12 @@ function setWinnerOnDB(mysqli $con, array $winner)
     }
 }
 
+/**
+ * Отправляет сообщение о победе на email пользователя
+ * 
+ * @param  mysqli $con Подключение к БД.
+ * @param array $winner Массив с данными победителя [id лота, id победителя, имя лота].
+ */
 function sendCongratulations(mysqli $con, array $winner)
 {
     $transport = (new Swift_SmtpTransport('smtp.gmail.com', 465, 'ssl'))

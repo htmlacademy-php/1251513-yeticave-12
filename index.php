@@ -59,6 +59,13 @@ function getItems (mysqli $con): array
     return $items;
 }
 
+
+/**
+ * Возвращает существующие в БД категории
+ * 
+ * @param mysqli $con Подключение к БД.
+ * @return array Массив категорий.
+ */
 function getCategoryCodes(mysqli $con): array
 {
     $sql = "SELECT code FROM category";
@@ -70,7 +77,14 @@ function getCategoryCodes(mysqli $con): array
     return $codes;
 }
 
-function getCategoryItems(mysqli $con, $categoryCode): array
+/**
+ * Возвращает массив открытых лотов определенной категории.
+ *
+ * @param  mysqli $con Подключение к БД.
+ * @param string $categoryCode код категории.
+ * @return array Массив лотов.
+ */
+function getCategoryItems(mysqli $con, string $categoryCode): array
 {
     $sql = "SELECT
                 i.id id, i.name, c.name category, IFNULL(b.price,start_price) price, img_path url, completion_date expiry_date
