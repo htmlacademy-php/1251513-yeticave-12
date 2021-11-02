@@ -4,11 +4,9 @@ require_once('helpers.php');
 require_once('db_connection.php');
 require_once('service_functions.php');
 
+sess_check_not_auth();
+
 $con = db_connect();
-
-sess_check_auth();
-
-$user_name = getUserNameById($con, sess_get_user_id());
 
 $incoming_data = ['email' => '', 'password' => '', 'name' => '', 'message' => ''];
 $form_errors = [];
@@ -29,7 +27,7 @@ $categories_arr = getCategories($con);
 
 $page_content = include_template('sign-up.php', ['categories_arr' => $categories_arr, 'incoming_data' => $incoming_data, 'form_errors' => $form_errors]);
 
-$layout_content = include_template('layout.php', ['is_auth' => 0 ,'categories_arr' => $categories_arr, 'content' => $page_content ,'title' => 'Регистрация']);
+$layout_content = include_template('layout.php', ['user_name' => null ,'categories_arr' => $categories_arr, 'content' => $page_content ,'title' => 'Регистрация']);
 
 print($layout_content);
 

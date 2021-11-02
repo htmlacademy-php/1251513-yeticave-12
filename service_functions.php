@@ -127,3 +127,22 @@ function getBidDate($date)
     }
     return $dt_range->format("%i").' '.get_noun_plural_form($dt_range->i, 'минуту', 'минуты', 'минут').' назад';
 }
+
+/**
+ * Возврящает email пользователья по id.
+ * @param mysqli $con Подключение к БД.
+ * @param int $id id пользователя.
+ * @return string Искомый email пользователя.
+ */
+function getUserEmailById(mysqli $con, int $id): string
+{
+    $sql = "SELECT email FROM user WHERE id = ?";
+    $stmt = db_get_prepare_stmt($con, $sql, [$id]);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $email = '';
+    if ($result && $row = $result->fetch_assoc()){
+        $email = $row['email'];
+    }
+    return $email;
+}

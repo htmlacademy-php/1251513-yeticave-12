@@ -29,13 +29,13 @@ $display_lot_item_form_flag = checkAccessForMakinBet($con, $id, sess_get_user_id
 $bid_history_arr = getBidHistory($con, $id);
 
 
-
 if(isset($_POST['cost'])){
     $bid = $_POST['cost'];
     $error = checkCostForError($bid, $item);
     if (!isset($error)) {
         sendBidToDB($con, $id, $bid, sess_get_user_id());
         header('Location: lot.php?id='.$id);
+        die();
     }
 }
 

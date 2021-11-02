@@ -13,6 +13,18 @@ function sess_check_auth(): void
     }
 }
 
+
+/**
+ * Проверяет отсутствие сессии.
+ */
+function sess_check_not_auth(): void
+{
+    if(isset($_SESSION['id'])){
+        header("location:/", false, 302);
+        die();
+    }
+}
+
 /**
  * Возвращает id пользователя из сессии.
  * @return int id пользователя, либо null.
@@ -41,6 +53,7 @@ function sess_logout(): void
  * Сохраняет в сессию id пользователя.
  * @param int id пользователя.
  */
-function sess_store_user_id(int $id): void{
+function sess_store_user_id(int $id): void
+{
     $_SESSION['id'] = $id;
 }

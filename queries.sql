@@ -1,8 +1,8 @@
 INSERT INTO
         category (name, code)
 VALUES
-       ('Доски и лыжи', 'boardsandskis'),
-       ('Крепления', 'mounts'),
+       ('Доски и лыжи', 'boards'),
+       ('Крепления', 'attachment'),
        ('Ботинки', 'boots'),
        ('Одежда', 'clothing'),
        ('Инструменты', 'tools'),
