@@ -3,7 +3,7 @@
         <ul class="nav__list container">
             <?php foreach ($categories_arr as $category): ?>
                 <li class="nav__item">
-                    <a href="all-lots.html"><?=xss_protection($category['name']); ?></a>
+                    <a href="index.php?category=<?=$category['code']?>"><?=xss_protection($category['name']); ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -33,6 +33,6 @@
       </div>
       <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>
       <button type="submit" class="button" name="submit">Зарегистрироваться</button>
-      <a class="text-link" href="#">Уже есть аккаунт</a>
+      <a class="text-link" href="login.php">Уже есть аккаунт</a>
     </form>
   </main>

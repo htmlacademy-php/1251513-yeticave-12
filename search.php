@@ -8,30 +8,25 @@ if (!isset($_GET['search'])){
     header('Location: pages/404.html');
     die();
 }
-
-$categories_arr = [];
-$items_arr = [];
-
-$con = db_connect();
-
 $query = trim($_GET['search']);
-
 if ($query == '') {
     header('Location: index.php');
     die();
 }
 
+$categories_arr = [];
+$items_arr = [];
+$con = db_connect();
 $user_name = getUserNameById($con, sess_get_user_id());
+
+$position = 1;
+if (isset($_GET['page']) && is_numeric($_GET['page']) && (int) $_GET['page'] > 0){
+    $position = (int)$_GET['page'];
+}
 
 $search_result_count = getResultCount($con, $query);
 
 $paginationListNumber = (int)($search_result_count / 9) +  1;
-
-$position = 1;
-
-if (isset($_GET['page'])){
-    $position = $_GET['page'];
-}
 
 $items_arr = getSearchItems($con, $query, $position);
 
@@ -52,7 +47,8 @@ print($layout_content);
  * @return array Массив лотов.
  */
 
-function getSearchItems(mysqli $con, string $query, int $page) : array{
+function getSearchItems(mysqli $con, string $query, int $page) : array
+{
     $sql = "SELECT    
     i.id id, i.name, c.name category, IFNULL(b.price,start_price) price, img_path url, completion_date expiry_date
         FROM  item i
@@ -86,7 +82,8 @@ function getSearchItems(mysqli $con, string $query, int $page) : array{
  * @param string $query Поисковый запрос.
  * @return int Количество найденых лотов.
  */
-function getResultCount(mysqli $con, string $query): int{
+function getResultCount(mysqli $con, string $query): int
+{
     $count = 0;
 
     $sql = "SELECT COUNT(*) AS count 

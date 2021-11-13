@@ -5,8 +5,8 @@
         <ul class="promo__list">
             <!--заполните этот список из массива категорий-->
             <?php foreach ($categories_arr as $category): ?>
-            <li class="promo__item promo__item--<?=$category['code']?>>">
-                <a class="promo__link" href="pages/all-lots.html"><?=xss_protection($category['name']) ;?></a>
+            <li class="promo__item promo__item--<?=$category['code']?>">
+                <a class="promo__link" href="index.php?category=<?=$category['code']?>"><?=xss_protection($category['name']) ;?></a>
             </li>
             <?php endforeach;?>
         </ul>
@@ -43,4 +43,15 @@
             <?php endforeach; ?>
         </ul>
     </section>
+    <?php if($paginationListNumber > 1): ?>
+      <ul class="pagination-list">
+        <li class="pagination-item pagination-item-prev"><a <?php if ($position != 1): ?> href="index.php?<?= empty($items_category) ? '': 'category='.$items_category.'&' ;?>page=<?=$position-1?>" <?php endif; ?>>Назад</a></li>
+        <?php for ($i = 1; $i <= $paginationListNumber; $i++): ?>
+          <li class="pagination-item <?php if ($position == $i): ?> pagination-item-active <?php endif; ?>"><a <?php if ($position != $i): ?>href="index.php?<?= empty($items_category) ? '': 'category='.$items_category.'&' ;?>page=<?=$i?>"<?php endif;?>><?=$i?></a></li>  
+            <?php if($i < $position - 2): ?><?php $i = $position - 3; ?>...<?php endif;?>
+            <?php if($i > $position + 1 && $i < $paginationListNumber): ?><?php $i = $paginationListNumber - 1; ?>...<?php endif;?>
+        <?php endfor?>
+        <li class="pagination-item pagination-item-next"><a <?php if ($position != $paginationListNumber): ?> href="index.php?<?= empty($items_category) ? '': 'category='.$items_category.'&' ;?>page=<?=$position+1?>" <?php endif; ?>>Вперед</a></li>
+      </ul>
+      <?php endif; ?>
 </main>
