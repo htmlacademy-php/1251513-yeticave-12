@@ -7,7 +7,7 @@
  */
 function db_connect():mysqli
 {
-    $config = include ('config.php');
+$config = include ('config.php');
     $con = mysqli_connect($config->host, $config->user, $config->password, $config->database);
     if ($con == false){
         print ("Ошибка подключения" . mysqli_connect_error());
