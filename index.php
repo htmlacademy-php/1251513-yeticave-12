@@ -18,7 +18,7 @@ if (isset($_GET['page']) && is_numeric($_GET['page']) && (int) $_GET['page'] > 0
 
 if($category){
     if(!in_array($category, getCategoryCodes($con))){
-        header('Location: pages/404.html');
+        header('Location: 404.php');
         die();
     }
     $item_count = getCategoryItemCount($con, $category);

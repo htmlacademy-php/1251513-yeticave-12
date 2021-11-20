@@ -53,7 +53,7 @@ print($layout_content);
  *
  * @param  mysqli $con Подключение к БД.
  * @param  int $id id лота.
- * @return void 
+ * @return void
  */
 function checkId( mysqli $con, int $id)
 {
@@ -62,7 +62,7 @@ function checkId( mysqli $con, int $id)
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
     if (mysqli_num_rows($res) == 0){
-        header('Location: pages/404.html');
+        header('Location: 404.php');
     }
 }
 
@@ -123,14 +123,14 @@ function checkCostForError ($bid, array $item): ?string
   */
 function sendBidToDB(mysqli $con, int $item_id, int $bid, int $user_id)
 {
-    $sql = "INSERT INTO bid (date, price, user_id, item_id) 
+    $sql = "INSERT INTO bid (date, price, user_id, item_id)
         VALUE (?, ?, ?, ?)";
     $stmt = db_get_prepare_stmt($con, $sql, [date('Y-m-d H:i:s', time()), $bid, $user_id, $item_id]);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
     if(mysqli_errno($con)){
-        printf("Connect failed: %s\n", mysqli_connect_error()); 
+        printf("Connect failed: %s\n", mysqli_connect_error());
         die();
     }
 }

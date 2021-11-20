@@ -5,7 +5,7 @@ require_once('db_connection.php');
 require_once('service_functions.php');
 
 if (!isset($_GET['search'])){
-    header('Location: pages/404.html');
+    header('Location: 404.php');
     die();
 }
 $query = trim($_GET['search']);
@@ -49,7 +49,7 @@ print($layout_content);
 
 function getSearchItems(mysqli $con, string $query, int $page) : array
 {
-    $sql = "SELECT    
+    $sql = "SELECT
     i.id id, i.name, c.name category, IFNULL(b.price,start_price) price, img_path url, completion_date expiry_date
         FROM  item i
     LEFT JOIN category c on c.id = i.category_id
@@ -58,19 +58,19 @@ function getSearchItems(mysqli $con, string $query, int $page) : array
         item_id, MAX(price) price
     FROM bid b2
     GROUP BY item_id) b ON i.id = b.item_id
-    WHERE MATCH (i.name, i.description) AGAINST(?) AND i.winner_id IS NULL 
+    WHERE MATCH (i.name, i.description) AGAINST(?) AND i.winner_id IS NULL
     ORDER BY date DESC LIMIT 9 OFFSET ?";
-    
+
     $items = [];
     $offset = ($page-1) * 9;
     $stmt = db_get_prepare_stmt($con, $sql, [$query, $offset]);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
-    
+
     while ($res && $row = $res->fetch_assoc()){
         $items[] = $row;
     }
-    
+
     return $items;
 }
 
@@ -86,9 +86,9 @@ function getResultCount(mysqli $con, string $query): int
 {
     $count = 0;
 
-    $sql = "SELECT COUNT(*) AS count 
-    FROM (item i) 
-    WHERE MATCH (i.name, i.description) AGAINST(?) 
+    $sql = "SELECT COUNT(*) AS count
+    FROM (item i)
+    WHERE MATCH (i.name, i.description) AGAINST(?)
     AND i.winner_id IS NULL";
 
     $stmt = db_get_prepare_stmt($con, $sql, [$query]);
