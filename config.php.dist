@@ -1,0 +1,13 @@
+<?php
+
+return (object) array(
+    //Настройки подключения к БД
+    'host' => ,
+    'user' => ,
+    'password' => ,
+    'database'=> ,
+
+    //Настройки Gmail SMTP сервера
+    'gm_login' => ,
+    'gm_password' =>
+);

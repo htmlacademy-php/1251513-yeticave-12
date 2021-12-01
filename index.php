@@ -3,25 +3,27 @@ require_once('sess.php');
 require_once('helpers.php');
 require_once('db_connection.php');
 require_once('service_functions.php');
+require_once('request_validation.php');
+
+$con = db_connect();
+require_once('getwinner.php');
 
 $categories_arr = [];
 $items_arr = [];
-
-$con = db_connect();
-
+$category = requestValidationGetString('category', null);
 $position = 1;
 if (isset($_GET['page']) && is_numeric($_GET['page']) && (int) $_GET['page'] > 0){
     $position = (int)$_GET['page'];
 }
 
-if(isset($_GET['category'])){
-    if(!in_array($_GET['category'], getCategoryCodes($con))){
-        header('Location: pages/404.html');
+if($category){
+    if(!in_array($category, getCategoryCodes($con))){
+        header('Location: 404.php');
         die();
     }
-    $item_count = getCategoryItemCount($con, $_GET['category']);
+    $item_count = getCategoryItemCount($con, $category);
     $paginationListNumber = (int)($item_count / 9) +  1;
-    $items_arr = getCategoryItems($con, $_GET['category'], $position);
+    $items_arr = getCategoryItems($con, $category, $position);
 }else{
     $item_count = getItemCount($con);
     $paginationListNumber = (int)($item_count / 9) +  1;
@@ -31,15 +33,13 @@ if(isset($_GET['category'])){
 $user_name = getUserNameById($con, sess_get_user_id());
 
 $categories_arr = getCategories($con);
-$cat = $_GET['category'];
+
 $page_content = include_template('main.php', [ 'items_arr' => $items_arr, 'categories_arr' => $categories_arr, 'position' => $position, 'paginationListNumber' => $paginationListNumber,
-'items_category' =>  $cat]);
+'items_category' =>  $category]);
 
 $layout_content = include_template('layout.php', ['user_name' => $user_name, 'categories_arr' => $categories_arr, 'content' => $page_content ,'title' => 'Главная']);
 
 print($layout_content);
-
-require_once('getwinner.php');
 
 
 /**
@@ -77,7 +77,7 @@ function getItems (mysqli $con, int $page): array
 
 /**
  * Возвращает существующие в БД категории
- * 
+ *
  * @param mysqli $con Подключение к БД.
  * @return array Массив категорий.
  */
@@ -121,21 +121,21 @@ $res = mysqli_stmt_get_result($stmt);
 while ($res && $row = $res->fetch_assoc()){
 $items[] = $row;
 }
-return $items;   
+return $items;
 }
 
 
 /**
  * Возвращает количество активных лотов.
- * 
+ *
  * @param  mysqli $con Подключение к БД.
  * @return int Количество активных лотов.
  */
 function getItemCount(mysqli $con): int
 {
     $count = 0;
-    $sql = "SELECT COUNT(*) AS count 
-    FROM (item i) 
+    $sql = "SELECT COUNT(*) AS count
+    FROM (item i)
     WHERE i.winner_id IS NULL";
     $res = mysqli_query($con, $sql);
 
@@ -148,7 +148,7 @@ function getItemCount(mysqli $con): int
 
 /**
  * Возвращает количество активных лотов определенной категории.
- * 
+ *
  * @param  mysqli $con Подключение к БД.
  * @param string $categoryCode Код категории.
  * @return int Количество активных лотов.
@@ -156,8 +156,8 @@ function getItemCount(mysqli $con): int
 function getCategoryItemCount(mysqli $con, string $categoryCode): int
 {
     $count = 0;
-    $sql = "SELECT COUNT(*) AS count 
-    FROM (item i) 
+    $sql = "SELECT COUNT(*) AS count
+    FROM (item i)
     LEFT JOIN category c on c.id = i.category_id
     WHERE c.code =? AND i.winner_id IS NULL";
     $stmt = db_get_prepare_stmt($con, $sql, [$categoryCode]);
@@ -169,4 +169,12 @@ function getCategoryItemCount(mysqli $con, string $categoryCode): int
     }
 
     return $count;
+}
+
+function testQuery (string $param, $defaultValue)
+{
+    if(isset($_GET[$param])){
+        return $_GET[$param];
+    }
+    return $defaultValue;
 }

@@ -22,7 +22,7 @@ if(isset($_POST['submit'])){
     $incoming_data['lot-rate'] = (int)$_POST['lot-rate'];
     $incoming_data['lot-step'] = (int)$_POST['lot-step'];
     $form_errors = checkForErrors($incoming_data, $_FILES);
-    
+
     if(count($form_errors) == 0) {
         $id = sentDataToDB($con, $incoming_data, $_FILES, $user_id);
         header('Location:lot.php?id='.$id);
@@ -59,7 +59,7 @@ function checkForErrors(array $incoming_data, array $files_data): array
         $result['message'] = 'Заполните описание';
     }
     if ((int)$incoming_data['lot-rate'] <= 0){
-        $result['lot-rate'] = 'Начальная цена дожна быть больше 0';
+        $result['lot-rate'] = 'Начальная цена должна быть больше 0';
     }
     if (!is_numeric($incoming_data['lot-step']) || (int)$incoming_data['lot-step'] <= 0){
         $result['lot-step'] = 'Шаг ставки должен быть целым положительным числом';
@@ -69,7 +69,7 @@ function checkForErrors(array $incoming_data, array $files_data): array
     }
     elseif(!in_array(mime_content_type($files_data['lot-img']['tmp_name']) ,['image/png', 'image/jpeg']) ||
     !in_array(substr(strrchr($files_data['lot-img']['name'], '.'), 1), ['jpg', 'jpeg', 'png'])){
-        $result['lot-img'] = 'Загрузите изоброжение в формате JPEG или PNG';
+        $result['lot-img'] = 'Загрузите изображение в формате JPEG или PNG';
     }
     if($incoming_data['lot-date'] == ''){
         $result['lot-date'] = 'Выберите дату';
@@ -119,9 +119,9 @@ function sentDataToDB(mysqli $con, array $incoming_data, array $img_file, int $u
     $incoming_data['lot-rate'], $incoming_data['lot-date'], $incoming_data['lot-step'], $user_id, $category_id]);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
-    
+
     if(mysqli_errno($con)){
-        printf("Connect failed: %s\n", mysqli_connect_error()); 
+        printf("Connect failed: %s\n", mysqli_connect_error());
         die();
     }
     $id = mysqli_insert_id($con);
