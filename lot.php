@@ -4,7 +4,7 @@ require_once('helpers.php');
 require_once('db_connection.php');
 require_once('service_functions.php');
 
-if(!isset($_GET['id'])){
+if (!isset($_GET['id'])) {
     header('Location: pages/404.html');
     die();
 }
@@ -14,9 +14,9 @@ $categories_arr =[];
 $error = null;
 $bid = null;
 
-$con = db_connect();
+$con = dbСonnect();
 
-$user_name = getUserNameById($con, sess_get_user_id());
+$user_name = getUserNameById($con, sessGetUserId());
 
 checkId($con, $id);
 
@@ -24,27 +24,30 @@ $categories_arr = getCategories($con);
 
 $item = getItem($con, $id);
 
-$display_lot_item_form_flag = checkAccessForMakinBet($con, $id, sess_get_user_id());
+$display_lot_item_form_flag = checkAccessForMakinBet($con, $id, sessGetUserId());
 
 $bid_history_arr = getBidHistory($con, $id);
 
 
-if(isset($_POST['cost'])){
+if (isset($_POST['cost'])) {
     $bid = $_POST['cost'];
     $error = checkCostForError($bid, $item);
     if (!isset($error)) {
-        sendBidToDB($con, $id, $bid, sess_get_user_id());
+        sendBidToDB($con, $id, $bid, sessGetUserId());
         header('Location: lot.php?id='.$id);
         die();
     }
 }
 
-$page_content = include_template('item.php', ['id' => $id, 'user_name' => $user_name, 'categories_arr' => $categories_arr, 'item_name' => $item['name'], 'img_path' => $item['img_path'],
+$page_content = include_template('item.php', ['id' => $id, 'user_name' => $user_name,
+    'categories_arr' => $categories_arr, 'item_name' => $item['name'], 'img_path' => $item['img_path'],
     'category_name' => $item['category_name'], 'description' => $item['description'],
     'completion_date' => $item['completion_date'], 'current_price' => $item['current_price'],
-    'min_bid' => $item['min_bid'], 'bid' => $bid ,'error' => $error, 'bid_history' => $bid_history_arr, 'display_lot_item_form_flag' => $display_lot_item_form_flag]);
+    'min_bid' => $item['min_bid'], 'bid' => $bid ,'error' => $error, 'bid_history' => $bid_history_arr,
+    'display_lot_item_form_flag' => $display_lot_item_form_flag]);
 
-$layout_content = include_template('layout.php', ['user_name' => $user_name, 'categories_arr' => $categories_arr, 'content' => $page_content ,'title' => $item['name']]);
+$layout_content = include_template('layout.php', ['user_name' => $user_name, 'categories_arr' => $categories_arr,
+    'content' => $page_content ,'title' => $item['name']]);
 
 print($layout_content);
 
@@ -55,13 +58,13 @@ print($layout_content);
  * @param  int $id id лота.
  * @return void
  */
-function checkId( mysqli $con, int $id)
+function checkId(mysqli $con, int $id)
 {
     $sql = "SELECT id FROM item WHERE id = ?";
     $stmt = db_get_prepare_stmt($con, $sql, [$id]);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
-    if (mysqli_num_rows($res) == 0){
+    if (mysqli_num_rows($res) == 0) {
         header('Location: 404.php');
     }
 }
@@ -75,7 +78,8 @@ function checkId( mysqli $con, int $id)
  */
 function getItem(mysqli $con, int $id): array
 {
-    $sql = "SELECT i.name, img_path, c.name category_name,description, completion_date, IFNULL(b.price,start_price) current_price,
+    $sql = "SELECT i.name, img_path, c.name category_name,description, completion_date,
+       IFNULL(b.price,start_price) current_price,
                 IFNULL(b.price + i.bid_step, start_price) min_bid
             FROM item i
             LEFT JOIN category c on c.id = i.category_id
@@ -88,7 +92,7 @@ function getItem(mysqli $con, int $id): array
     $stmt = db_get_prepare_stmt($con, $sql, [$id]);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
-    if ($res && $row = $res->fetch_assoc()){
+    if ($res && $row = $res->fetch_assoc()) {
         $item = $row;
     }
     return $item;
@@ -100,17 +104,15 @@ function getItem(mysqli $con, int $id): array
  * @param array $item текущий лот
  * @return string сообщение об ошибке
  */
-function checkCostForError ($bid, array $item): ?string
+function checkCostForError($bid, array $item): ?string
 {
-    $message = null;
-    if(!is_numeric($bid)){
+    if (!is_numeric($bid)) {
         return 'Неверный формат данных';
     }
     if ($bid < $item['min_bid']) {
         return 'Введенная ставка меньше минимальной';
     }
-    return $message;
-
+    return null;
 }
 
 /**
@@ -129,7 +131,7 @@ function sendBidToDB(mysqli $con, int $item_id, int $bid, int $user_id)
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
-    if(mysqli_errno($con)){
+    if (mysqli_errno($con)) {
         printf("Connect failed: %s\n", mysqli_connect_error());
         die();
     }
@@ -141,14 +143,15 @@ function sendBidToDB(mysqli $con, int $item_id, int $bid, int $user_id)
  * @param  int $id id лота.
  * @return array Массив ставок для заданного лота.
  */
-function getBidHistory (mysqli $con, int $id): array
+function getBidHistory(mysqli $con, int $id): array
 {
-    $sql = "SELECT u.name, price, date FROM bid b LEFT JOIN user u on b.user_id = u.id  WHERE item_id=? ORDER BY date DESC";
+    $sql = "SELECT u.name, price, date FROM bid b LEFT JOIN user u on b.user_id = u.id  WHERE item_id=?
+    ORDER BY date DESC";
     $item = [];
     $stmt = db_get_prepare_stmt($con, $sql, [$id]);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
-    while ($res && $row = $res->fetch_assoc()){
+    while ($res && $row = $res->fetch_assoc()) {
         $item[] = $row;
     }
     return $item;
@@ -160,30 +163,30 @@ function getBidHistory (mysqli $con, int $id): array
  * Проверяет, можно ли разрешать производить ставку.
  * @param  mysqli $con Подключение к БД.
  * @param  int $id id лота.
- * @param ?int $user_id id текущего пользователя, или null, если пользователь не авторезирован
+ * @param int $user_id id текущего пользователя, или null, если пользователь не авторезирован
  * @return bool true, если производить ставку разрешено, false в противном случае
  */
 function checkAccessForMakinBet(mysqli $con, int $id, ?int $user_id): bool
 {
-    if (!isset($user_id)){
+    if (!isset($user_id)) {
         return false;
     }
     $authorItemId = getItemAuthorId($con, $id);
-    if(isset($authorItemId)){
-        if ($authorItemId == $user_id){
+    if (isset($authorItemId)) {
+        if ($authorItemId == $user_id) {
             return false;
         }
     }
     $authorLastBidId = getAuthorLastBidId($con, $id);
-    if(isset($authorLastBidId)){
-        if($authorLastBidId == $user_id){
+    if (isset($authorLastBidId)) {
+        if ($authorLastBidId == $user_id) {
             return false;
         }
     }
 
-    $date_range = get_dt_range(getItemDate($con, $id));
+    $date_range = getDateRange(getItemDate($con, $id));
     if (isset($date_range)) {
-        if ($date_range[0] ==0 && $date_range[1] == 0){
+        if ($date_range[0] ==0 && $date_range[1] == 0) {
             return false;
         }
     }
@@ -204,7 +207,7 @@ function getItemAuthorId(mysqli $con, int $id): ?int
     $stmt = db_get_prepare_stmt($con, $sql, [$id]);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
-    if ($res && $row = $res->fetch_assoc()){
+    if ($res && $row = $res->fetch_assoc()) {
         $author_id = $row['author_id'];
     }
     return $author_id;
@@ -223,7 +226,7 @@ function getAuthorLastBidId(mysqli $con, int $id): ?int
     $stmt = db_get_prepare_stmt($con, $sql, [$id]);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
-    if ($res && $row = $res->fetch_assoc()){
+    if ($res && $row = $res->fetch_assoc()) {
         $bid_author_id = $row['user_id'];
     }
     return $bid_author_id;
@@ -242,7 +245,7 @@ function getItemDate(mysqli $con, int $id): ?string
     $stmt = db_get_prepare_stmt($con, $sql, [$id]);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
-    if ($res && $row = $res->fetch_assoc()){
+    if ($res && $row = $res->fetch_assoc()) {
         $date = $row['completion_date'];
     }
     return $date;

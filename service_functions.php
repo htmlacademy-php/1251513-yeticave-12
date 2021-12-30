@@ -4,7 +4,7 @@
  * @param string $date Дата.
  * @return array Массив из двух строковых переменных, часов и минут.
  */
-function get_dt_range(string $date): array
+function getDateRange(string $date): array
 {
     date_default_timezone_set('Europe/Moscow');
     $expiry_date = DateTime::createFromFormat('Y-m-d', $date);
@@ -31,7 +31,7 @@ function get_dt_range(string $date): array
  * @param string $string Входные данные.
  * @return string Выходные данные.
  */
-function xss_protection(string $string): string
+function xssProtection(string $string): string
 {
     return htmlspecialchars($string);
 }
@@ -41,9 +41,9 @@ function xss_protection(string $string): string
  * @param int $price Входящая цена.
  * @return string Цена в формате ХХ ХХХ Р.
  */
-function price_format(int $price): string
+function priceFormat(int $price): string
 {
-    return number_format(ceil($price),0, '.',' ').' ₽';
+    return number_format(ceil($price), 0, '.', ' ') . ' ₽';
 }
 
 /**
@@ -56,7 +56,7 @@ function getCategories(mysqli $con): array
     $sql = "SELECT name, code FROM category";
     $categories = [];
     $res = mysqli_query($con, $sql);
-    while ($res && $row = $res->fetch_assoc()){
+    while ($res && $row = $res->fetch_assoc()) {
         $categories[] = $row;
     }
     return $categories;
@@ -68,9 +68,9 @@ function getCategories(mysqli $con): array
  * @param int $id id пользователя.
  * @return string Имя пользователя.
  */
-function getUserNameById (mysqli $con, ?int $id): string
+function getUserNameById(mysqli $con, ?int $id): string
 {
-    if (is_null($id)){
+    if (is_null($id)) {
         return '';
     }
 
@@ -80,7 +80,7 @@ function getUserNameById (mysqli $con, ?int $id): string
     $result = mysqli_stmt_get_result($stmt);
     $name = '';
 
-    if ($result && $row = $result->fetch_assoc()){
+    if ($result && $row = $result->fetch_assoc()) {
         $name = $row['name'];
     }
     return $name;
@@ -99,7 +99,7 @@ function getUserIdByEmail(mysqli $con, string $email):int
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $id = 0;
-    if ($result && $row = $result->fetch_assoc()){
+    if ($result && $row = $result->fetch_assoc()) {
         $id = $row['id'];
     }
     return $id;
@@ -109,6 +109,7 @@ function getUserIdByEmail(mysqli $con, string $email):int
  * Возвращает прошедшее с момента ставки время.
  * @param string $date Дата ставки.
  * @return string Время прошедшее с момента ставки.
+ * @throws Exception
  */
 function getBidDate($date)
 {
@@ -117,19 +118,19 @@ function getBidDate($date)
     $currentDate = new DateTime();
     $dt_range = $currentDate->diff($placement_date);
 
-    
-    if($dt_range->days > 0){
+
+    if ($dt_range->days > 0) {
         return $placement_date->format("d.m.y в H:i");
-    } elseif($dt_range->h == 1 ){
+    } elseif ($dt_range->h == 1) {
         return 'Час назад';
-    } elseif($dt_range->h > 1){
+    } elseif ($dt_range->h > 1) {
         return $dt_range->format("%h").' '.get_noun_plural_form($dt_range->h, 'час', 'часа', 'часов').' назад';
     }
     return $dt_range->format("%i").' '.get_noun_plural_form($dt_range->i, 'минуту', 'минуты', 'минут').' назад';
 }
 
 /**
- * Возврящает email пользователья по id.
+ * Возвращает email пользователя по id.
  * @param mysqli $con Подключение к БД.
  * @param int $id id пользователя.
  * @return string Искомый email пользователя.
@@ -141,7 +142,7 @@ function getUserEmailById(mysqli $con, int $id): string
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $email = '';
-    if ($result && $row = $result->fetch_assoc()){
+    if ($result && $row = $result->fetch_assoc()) {
         $email = $row['email'];
     }
     return $email;

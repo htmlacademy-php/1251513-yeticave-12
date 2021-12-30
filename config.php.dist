@@ -5,7 +5,7 @@ return (object) array(
     'host' => ,
     'user' => ,
     'password' => ,
-    'database'=> ,
+    'database'=> 'yeticave',
 
     //Настройки Gmail SMTP сервера
     'gm_login' => ,

@@ -4,11 +4,11 @@ require_once('helpers.php');
 require_once('db_connection.php');
 require_once('service_functions.php');
 
-$con = db_connect();
+$con = dbСonnect();
 
-sess_check_auth();
+sessCheckAuth();
 
-$user_id = sess_get_user_id();
+$user_id = sessGetUserId();
 
 $user_name = getUserNameById($con, $user_id);
 
@@ -17,13 +17,13 @@ $incoming_data = ['lot-name' => '', 'category' => '', 'message' => '',
 
 $form_errors = [];
 
-if(isset($_POST['submit'])){
+if (isset($_POST['submit'])) {
     $incoming_data = $_POST;
     $incoming_data['lot-rate'] = (int)$_POST['lot-rate'];
     $incoming_data['lot-step'] = (int)$_POST['lot-step'];
     $form_errors = checkForErrors($incoming_data, $_FILES);
 
-    if(count($form_errors) == 0) {
+    if (count($form_errors) == 0) {
         $id = sentDataToDB($con, $incoming_data, $_FILES, $user_id);
         header('Location:lot.php?id='.$id);
         die();
@@ -33,9 +33,11 @@ if(isset($_POST['submit'])){
 $categories_arr = [];
 $categories_arr = getCategories($con);
 
-$page_content = include_template('add_lot.php', ['categories_arr' => $categories_arr, 'incoming_data' => $incoming_data, 'form_errors' => $form_errors]);
+$page_content = include_template('add_lot.php', ['categories_arr' => $categories_arr,
+    'incoming_data' => $incoming_data, 'form_errors' => $form_errors]);
 
-$layout_content = include_template('layout.php', ['user_name' => $user_name, 'categories_arr' => $categories_arr, 'content' => $page_content ,'title' => 'Добавление лота']);
+$layout_content = include_template('layout.php', ['user_name' => $user_name, 'categories_arr' => $categories_arr,
+    'content' => $page_content ,'title' => 'Добавление лота']);
 
 print($layout_content);
 
@@ -49,31 +51,30 @@ print($layout_content);
 function checkForErrors(array $incoming_data, array $files_data): array
 {
     $result = [];
-    if ($incoming_data['lot-name'] == ''){
+    if ($incoming_data['lot-name'] == '') {
         $result['lot-name'] = 'Введите наименование лота';
     }
-    if ($incoming_data['category'] == 'Выберите категорию'){
+    if ($incoming_data['category'] == 'Выберите категорию') {
         $result['category'] = 'Выберите категорию';
     }
-    if ($incoming_data['message'] == ''){
+    if ($incoming_data['message'] == '') {
         $result['message'] = 'Заполните описание';
     }
-    if ((int)$incoming_data['lot-rate'] <= 0){
+    if ((int)$incoming_data['lot-rate'] <= 0) {
         $result['lot-rate'] = 'Начальная цена должна быть больше 0';
     }
-    if (!is_numeric($incoming_data['lot-step']) || (int)$incoming_data['lot-step'] <= 0){
+    if (!is_numeric($incoming_data['lot-step']) || (int)$incoming_data['lot-step'] <= 0) {
         $result['lot-step'] = 'Шаг ставки должен быть целым положительным числом';
     }
-    if($files_data['lot-img']['error'] == 4){
+    if ($files_data['lot-img']['error'] == 4) {
         $result['lot-img'] = 'Загрузите изображение';
-    }
-    elseif(!in_array(mime_content_type($files_data['lot-img']['tmp_name']) ,['image/png', 'image/jpeg']) ||
-    !in_array(substr(strrchr($files_data['lot-img']['name'], '.'), 1), ['jpg', 'jpeg', 'png'])){
+    } elseif (!in_array(mime_content_type($files_data['lot-img']['tmp_name']), ['image/png', 'image/jpeg']) ||
+    !in_array(substr(strrchr($files_data['lot-img']['name'], '.'), 1), ['jpg', 'jpeg', 'png'])) {
         $result['lot-img'] = 'Загрузите изображение в формате JPEG или PNG';
     }
-    if($incoming_data['lot-date'] == ''){
+    if ($incoming_data['lot-date'] == '') {
         $result['lot-date'] = 'Выберите дату';
-    }elseif(!checkLotDate($incoming_data['lot-date'])){
+    } elseif (!checkLotDate($incoming_data['lot-date'])) {
         $result['lot-date'] = 'Выберите дату из будущего';
     }
 
@@ -92,7 +93,7 @@ function checkLotDate(string $date): bool
     $currentDate = new DateTime();
     $range = $currentDate -> diff($endDate);
     $result = true;
-    if($range->invert){
+    if ($range->invert) {
         $result = false;
     }
     return $result;
@@ -115,19 +116,21 @@ function sentDataToDB(mysqli $con, array $incoming_data, array $img_file, int $u
     item (date, name, description, start_price, completion_date,bid_step, author_id, category_id)
     VALUE
         (?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt = db_get_prepare_stmt($con, $sql, [date('Y-m-d H:i:s', time()), $incoming_data['lot-name'], $incoming_data['message'],
+    $stmt = db_get_prepare_stmt($con, $sql, [date('Y-m-d H:i:s', time()), $incoming_data['lot-name'],
+        $incoming_data['message'],
     $incoming_data['lot-rate'], $incoming_data['lot-date'], $incoming_data['lot-step'], $user_id, $category_id]);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
-    if(mysqli_errno($con)){
+    if (mysqli_errno($con)) {
         printf("Connect failed: %s\n", mysqli_connect_error());
         die();
     }
     $id = mysqli_insert_id($con);
     $img_path = 'uploads/lot-img-'.$id.'.'.substr(strrchr($img_file['lot-img']['name'], '.'), 1);
-    if(move_uploaded_file($img_file['lot-img']['tmp_name'], $img_path))
-    $sql = "UPDATE item SET img_path = ? WHERE id = ?";
+    if (move_uploaded_file($img_file['lot-img']['tmp_name'], $img_path)) {
+        $sql = "UPDATE item SET img_path = ? WHERE id = ?";
+    }
     $stmt = db_get_prepare_stmt($con, $sql, [ $img_path, $id]);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_get_result($stmt);
@@ -148,7 +151,7 @@ function getCategoryId(mysqli $con, string $str) : int
     mysqli_stmt_execute($stmt);
     $result =  mysqli_stmt_get_result($stmt);
     $res = [];
-    if ($result && $row = $result->fetch_assoc()){
+    if ($result && $row = $result->fetch_assoc()) {
         $res = $row;
     }
     return $res['id'];

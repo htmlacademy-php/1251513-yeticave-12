@@ -4,7 +4,7 @@ require_once('helpers.php');
 require_once('db_connection.php');
 require_once('service_functions.php');
 
-if (!isset($_GET['search'])){
+if (!isset($_GET['search'])) {
     header('Location: 404.php');
     die();
 }
@@ -16,11 +16,11 @@ if ($query == '') {
 
 $categories_arr = [];
 $items_arr = [];
-$con = db_connect();
-$user_name = getUserNameById($con, sess_get_user_id());
+$con = dbСonnect();
+$user_name = getUserNameById($con, sessGetUserId());
 
 $position = 1;
-if (isset($_GET['page']) && is_numeric($_GET['page']) && (int) $_GET['page'] > 0){
+if (isset($_GET['page']) && is_numeric($_GET['page']) && (int) $_GET['page'] > 0) {
     $position = (int)$_GET['page'];
 }
 
@@ -32,9 +32,12 @@ $items_arr = getSearchItems($con, $query, $position);
 
 $categories_arr = getCategories($con);
 
-$page_content = include_template('search_tmp.php', ['categories_arr' => $categories_arr, 'items_arr' => $items_arr,'query' => $query, 'position' => $position, 'paginationListNumber' => $paginationListNumber ]);
+$page_content = include_template('search_tmp.php', ['categories_arr' => $categories_arr,
+    'items_arr' => $items_arr,'query' => $query, 'position' => $position,
+    'paginationListNumber' => $paginationListNumber ]);
 
-$layout_content = include_template('layout.php', ['user_name' => $user_name, 'categories_arr' => $categories_arr, 'content' => $page_content ,'title' => 'Главная']);
+$layout_content = include_template('layout.php', ['user_name' => $user_name, 'categories_arr' => $categories_arr,
+    'content' => $page_content ,'title' => 'Главная']);
 
 print($layout_content);
 
@@ -67,7 +70,7 @@ function getSearchItems(mysqli $con, string $query, int $page) : array
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
-    while ($res && $row = $res->fetch_assoc()){
+    while ($res && $row = $res->fetch_assoc()) {
         $items[] = $row;
     }
 
@@ -95,7 +98,7 @@ function getResultCount(mysqli $con, string $query): int
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
-    if ($res && $row = $res->fetch_assoc()){
+    if ($res && $row = $res->fetch_assoc()) {
         $count = $row['count'];
     }
 

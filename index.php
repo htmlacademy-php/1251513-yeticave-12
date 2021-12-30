@@ -5,39 +5,41 @@ require_once('db_connection.php');
 require_once('service_functions.php');
 require_once('request_validation.php');
 
-$con = db_connect();
+$con = dbСonnect();
 require_once('getwinner.php');
 
 $categories_arr = [];
 $items_arr = [];
 $category = requestValidationGetString('category', null);
 $position = 1;
-if (isset($_GET['page']) && is_numeric($_GET['page']) && (int) $_GET['page'] > 0){
+if (isset($_GET['page']) && is_numeric($_GET['page']) && (int) $_GET['page'] > 0) {
     $position = (int)$_GET['page'];
 }
 
-if($category){
-    if(!in_array($category, getCategoryCodes($con))){
+if ($category) {
+    if (!in_array($category, getCategoryCodes($con))) {
         header('Location: 404.php');
         die();
     }
     $item_count = getCategoryItemCount($con, $category);
     $paginationListNumber = (int)($item_count / 9) +  1;
     $items_arr = getCategoryItems($con, $category, $position);
-}else{
+} else {
     $item_count = getItemCount($con);
     $paginationListNumber = (int)($item_count / 9) +  1;
     $items_arr = getItems($con, $position);
 }
 
-$user_name = getUserNameById($con, sess_get_user_id());
+$user_name = getUserNameById($con, sessGetUserId());
 
 $categories_arr = getCategories($con);
 
-$page_content = include_template('main.php', [ 'items_arr' => $items_arr, 'categories_arr' => $categories_arr, 'position' => $position, 'paginationListNumber' => $paginationListNumber,
+$page_content = include_template('main.php', [ 'items_arr' => $items_arr, 'categories_arr' => $categories_arr,
+    'position' => $position, 'paginationListNumber' => $paginationListNumber,
 'items_category' =>  $category]);
 
-$layout_content = include_template('layout.php', ['user_name' => $user_name, 'categories_arr' => $categories_arr, 'content' => $page_content ,'title' => 'Главная']);
+$layout_content = include_template('layout.php', ['user_name' => $user_name, 'categories_arr' => $categories_arr,
+    'content' => $page_content ,'title' => 'Главная']);
 
 print($layout_content);
 
@@ -49,10 +51,10 @@ print($layout_content);
  * @param int $page Номер страницы, для которой ищутся лоты.
  * @return array Массив лотов.
  */
-function getItems (mysqli $con, int $page): array
+function getItems(mysqli $con, int $page): array
 {
     $sql = "SELECT
-                i.id id, i.name, c.name category, IFNULL(b.price,start_price) price, img_path url, completion_date expiry_date
+        i.id id, i.name, c.name category, IFNULL(b.price,start_price) price, img_path url, completion_date expiry_date
              FROM  item i
             LEFT JOIN category c on c.id = i.category_id
             LEFT JOIN
@@ -68,7 +70,7 @@ function getItems (mysqli $con, int $page): array
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
-    while ($res && $row = $res->fetch_assoc()){
+    while ($res && $row = $res->fetch_assoc()) {
         $items[] = $row;
     }
     return $items;
@@ -86,7 +88,7 @@ function getCategoryCodes(mysqli $con): array
     $sql = "SELECT code FROM category";
     $codes = [];
     $res = mysqli_query($con, $sql);
-    while ($res && $row = $res->fetch_assoc()){
+    while ($res && $row = $res->fetch_assoc()) {
         $codes[] = $row['code'];
     }
     return $codes;
@@ -103,7 +105,7 @@ function getCategoryCodes(mysqli $con): array
 function getCategoryItems(mysqli $con, string $categoryCode, int $page): array
 {
     $sql = "SELECT
-                i.id id, i.name, c.name category, IFNULL(b.price,start_price) price, img_path url, completion_date expiry_date
+        i.id id, i.name, c.name category, IFNULL(b.price,start_price) price, img_path url, completion_date expiry_date
             FROM  item i
             LEFT JOIN category c on c.id = i.category_id
             LEFT JOIN
@@ -113,15 +115,15 @@ function getCategoryItems(mysqli $con, string $categoryCode, int $page): array
                 GROUP BY item_id) b ON i.id = b.item_id
             WHERE i.winner_id IS NULL AND c.code = ?
             ORDER BY date DESC LIMIT 9 OFFSET ?";
-$items = [];
-$offset = ($page-1) * 9;
-$stmt = db_get_prepare_stmt($con, $sql, [$categoryCode, $offset]);
-mysqli_stmt_execute($stmt);
-$res = mysqli_stmt_get_result($stmt);
-while ($res && $row = $res->fetch_assoc()){
-$items[] = $row;
-}
-return $items;
+    $items = [];
+    $offset = ($page-1) * 9;
+    $stmt = db_get_prepare_stmt($con, $sql, [$categoryCode, $offset]);
+    mysqli_stmt_execute($stmt);
+    $res = mysqli_stmt_get_result($stmt);
+    while ($res && $row = $res->fetch_assoc()) {
+        $items[] = $row;
+    }
+    return $items;
 }
 
 
@@ -139,7 +141,7 @@ function getItemCount(mysqli $con): int
     WHERE i.winner_id IS NULL";
     $res = mysqli_query($con, $sql);
 
-    if ($res && $row = $res->fetch_assoc()){
+    if ($res && $row = $res->fetch_assoc()) {
         $count = $row['count'];
     }
 
@@ -164,17 +166,9 @@ function getCategoryItemCount(mysqli $con, string $categoryCode): int
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
-    if ($res && $row = $res->fetch_assoc()){
+    if ($res && $row = $res->fetch_assoc()) {
         $count = $row['count'];
     }
 
     return $count;
-}
-
-function testQuery (string $param, $defaultValue)
-{
-    if(isset($_GET[$param])){
-        return $_GET[$param];
-    }
-    return $defaultValue;
 }
