@@ -7,7 +7,7 @@
  */
 function requestValidationGetString(string $param, ?string $default): ?string
 {
-    if (isset($_GET[$param])){
+    if (isset($_GET[$param])) {
         return (string)$_GET[$param];
     }
     return $default;
@@ -55,7 +55,7 @@ function requestValidationGetFloat(string $param, ?float $default): ?float
  */
 function requestValidationGetBoolean(string $param, ?bool $default): ?bool
 {
-    if (isset($_GET[$param])){
+    if (isset($_GET[$param])) {
         switch (mb_strtolower($_GET[$param])) {
             case 'true':
                 return true;

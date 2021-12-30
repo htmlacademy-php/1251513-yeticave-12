@@ -23,11 +23,12 @@ function checkWinners(mysqli $con): array{
     LEFT JOIN item i ON i.id = b.item_id
     LEFT JOIN category c ON c.id=i.category_id
     LEFT JOIN user u ON u.id = i.author_id
-    WHERE price IN (SELECT MAX(price) price FROM bid GROUP BY item_id) AND i.completion_date < ? AND i.winner_id IS NULL";
+    WHERE price IN (SELECT MAX(price) price FROM bid GROUP BY item_id)
+    AND i.completion_date < ? AND i.winner_id IS NULL";
     $stmt = db_get_prepare_stmt($con, $sql, [$current_date]);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
-    while ($result && $row = $result->fetch_assoc()){
+    while ($result && $row = $result->fetch_assoc()) {
         $pair[] = ['item_id' => $row['id'], 'winner_id' => $row['winner'], 'item_name' => $row['item_name']];
     }
     return $pair;
@@ -46,7 +47,7 @@ function setWinnerOnDB(mysqli $con, array $winner)
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
 
-    if(mysqli_errno($con) && $res){
+    if (mysqli_errno($con) && $res) {
         printf("Connect failed: %s\n", mysqli_connect_error());
         die();
     }
@@ -60,13 +61,14 @@ function setWinnerOnDB(mysqli $con, array $winner)
  */
 function sendCongratulations(mysqli $con, array $winner)
 {
-    $config = include ('config.php');
+    $config = include('config.php');
     $transport = (new Swift_SmtpTransport('smtp.gmail.com', 465, 'ssl'))
     ->setUsername($config->gm_login)
     ->setPassword($config->gm_password)
     ;
 
-    $text = include_template('email.php', ['winner_arr' => $winner, 'winner_name' => getUserNameById($con, $winner['winner_id'])]);
+    $text = include_template('email.php', ['winner_arr' => $winner,
+        'winner_name' => getUserNameById($con, $winner['winner_id'])]);
 
     $message = (new Swift_Message())
     ->setSubject('Поздравления от Yeticave')
@@ -77,9 +79,9 @@ function sendCongratulations(mysqli $con, array $winner)
 
     $mailer = new Swift_Mailer($transport);
 
-    try{
+    try {
         $result = $mailer->send($message);
-    }catch (Exception $e) {
+    } catch (Exception $e) {
         $e->getMessage();
     }
 }

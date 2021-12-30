@@ -1,13 +1,13 @@
-<?
+<?php
 
 session_start();
 
 /**
  * Проверяет существование сессии.
  */
-function sess_check_auth(): void
+function sessCheckAuth(): void
 {
-    if(!isset($_SESSION['id'])){
+    if (!isset($_SESSION['id'])) {
         header('HTTP/1.0 403 Forbidden');
         die();
     }
@@ -17,9 +17,9 @@ function sess_check_auth(): void
 /**
  * Проверяет отсутствие сессии.
  */
-function sess_check_not_auth(): void
+function sessCheckNotAuth(): void
 {
-    if(isset($_SESSION['id'])){
+    if (isset($_SESSION['id'])) {
         header("location:/", false, 302);
         die();
     }
@@ -29,7 +29,7 @@ function sess_check_not_auth(): void
  * Возвращает id пользователя из сессии.
  * @return int id пользователя, либо null.
  */
-function sess_get_user_id(): ?int
+function sessGetUserId(): ?int
 {
     $value = $_SESSION['id'] ?? null;
     $user_id = null;
@@ -44,7 +44,7 @@ function sess_get_user_id(): ?int
 /**
  * Удаляет сессию.
  */
-function sess_logout(): void
+function sessLogout(): void
 {
     unset($_SESSION['id']);
 }
@@ -53,7 +53,7 @@ function sess_logout(): void
  * Сохраняет в сессию id пользователя.
  * @param int id пользователя.
  */
-function sess_store_user_id(int $id): void
+function sessStoreUserId(int $id): void
 {
     $_SESSION['id'] = $id;
 }
